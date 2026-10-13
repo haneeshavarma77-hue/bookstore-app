@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookstore</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="container header__inner">
+      <div class="header__brand">
+        <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span>Bookstore</span>
+      </div>
+      <button class="btn btn--primary" id="addBookBtn" aria-label="Add a new book">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Book
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <main class="container main">
+
+    <!-- Toolbar: search + filter -->
+    <section class="toolbar" aria-label="Search and filter books">
+      <div class="search-wrap">
+        <svg class="search-wrap__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          id="searchInput"
+          class="input search-wrap__input"
+          type="search"
+          placeholder="Search by title or author…"
+          aria-label="Search books"
+        />
+      </div>
+      <div class="filters">
+        <select id="genreFilter" class="input input--select" aria-label="Filter by genre">
+          <option value="">All Genres</option>
+          <option>Fiction</option>
+          <option>Non-Fiction</option>
+          <option>Science Fiction</option>
+          <option>Fantasy</option>
+          <option>Mystery</option>
+          <option>Biography</option>
+          <option>History</option>
+          <option>Self-Help</option>
+          <option>Technology</option>
+          <option>Other</option>
+        </select>
+        <select id="sortSelect" class="input input--select" aria-label="Sort books">
+          <option value="title-asc">Title A–Z</option>
+          <option value="title-desc">Title Z–A</option>
+          <option value="author-asc">Author A–Z</option>
+          <option value="price-asc">Price Low–High</option>
+          <option value="price-desc">Price High–Low</option>
+          <option value="year-desc">Newest First</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <span id="bookCount">0 books</span>
+      <span id="statsExtra"></span>
+    </div>
+
+    <!-- Book grid -->
+    <section id="bookGrid" class="book-grid" aria-live="polite" aria-label="Book list"></section>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="empty-state" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+      <p class="empty-state__title">No books found</p>
+      <p class="empty-state__sub" id="emptyStateSub">Add your first book to get started.</p>
+    </div>
+
+  </main>
+
+  <!-- ── Modal ── -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal__backdrop" id="modalBackdrop"></div>
+    <div class="modal__card">
+      <div class="modal__header">
+        <h2 class="modal__title" id="modalTitle">Add Book</h2>
+        <button class="modal__close" id="modalClose" aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <form id="bookForm" class="modal__form" novalidate>
+        <input type="hidden" id="bookId" />
+
+        <div class="form-row">
+          <div class="field">
+            <label class="field__label" for="fieldTitle">Title <span aria-hidden="true">*</span></label>
+            <input id="fieldTitle" class="input" type="text" placeholder="Book title" required />
+            <span class="field__error" id="errTitle" role="alert"></span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="fieldAuthor">Author <span aria-hidden="true">*</span></label>
+            <input id="fieldAuthor" class="input" type="text" placeholder="Author name" required />
+            <span class="field__error" id="errAuthor" role="alert"></span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label class="field__label" for="fieldIsbn">ISBN</label>
+            <input id="fieldIsbn" class="input" type="text" placeholder="e.g. 978-3-16-148410-0" />
+          </div>
+          <div class="field">
+            <label class="field__label" for="fieldGenre">Genre</label>
+            <select id="fieldGenre" class="input input--select">
+              <option value="">Select genre</option>
+              <option>Fiction</option>
+              <option>Non-Fiction</option>
+              <option>Science Fiction</option>
+              <option>Fantasy</option>
+              <option>Mystery</option>
+              <option>Biography</option>
+              <option>History</option>
+              <option>Self-Help</option>
+              <option>Technology</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label class="field__label" for="fieldPrice">Price ($) <span aria-hidden="true">*</span></label>
+            <input id="fieldPrice" class="input" type="number" placeholder="0.00" min="0" step="0.01" required />
+            <span class="field__error" id="errPrice" role="alert"></span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="fieldYear">Year</label>
+            <input id="fieldYear" class="input" type="number" placeholder="e.g. 2024" min="1000" max="2100" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="fieldDesc">Description</label>
+          <textarea id="fieldDesc" class="input input--textarea" placeholder="Short description…" rows="3"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="fieldCover">Cover Image URL</label>
+          <input id="fieldCover" class="input" type="url" placeholder="https://…" />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="fieldStock">Stock Quantity</label>
+          <input id="fieldStock" class="input" type="number" placeholder="0" min="0" />
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn btn--primary" id="submitBtn">Add Book</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Delete confirm dialog ── -->
+  <div id="deleteModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteTitle" hidden>
+    <div class="modal__backdrop" id="deleteBackdrop"></div>
+    <div class="modal__card modal__card--sm">
+      <div class="modal__header">
+        <h2 class="modal__title" id="deleteTitle">Delete Book</h2>
+      </div>
+      <p class="delete-msg">Are you sure you want to delete <strong id="deleteBookName"></strong>? This action cannot be undone.</p>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="deleteCancelBtn">Cancel</button>
+        <button class="btn btn--danger" id="deleteConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
